@@ -2,7 +2,10 @@ package model
 
 // User related requests
 type RegisterRequest struct {
-	Username, Email, Password, ConfirmationPassword string
+	Username             string `json:"username"`
+	Email                string `json:"email"`
+	Password             string `json:"password"`
+	ConfirmationPassword string `json:"confirmationPassword"`
 }
 
 // Post related request
