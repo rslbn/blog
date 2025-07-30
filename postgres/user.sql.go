@@ -161,3 +161,25 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 	)
 	return i, err
 }
+
+const userExistByUsername = `-- name: UserExistByUsername :one
+SELECT COUNT(*) > 0 AS is_exist FROM users WHERE username = $1
+`
+
+func (q *Queries) UserExistByUsername(ctx context.Context, username string) (bool, error) {
+	row := q.db.QueryRow(ctx, userExistByUsername, username)
+	var is_exist bool
+	err := row.Scan(&is_exist)
+	return is_exist, err
+}
+
+const userExistsByEmail = `-- name: UserExistsByEmail :one
+SELECT COUNT(*) > 0 AS is_exist FROM users WHERE email = $1
+`
+
+func (q *Queries) UserExistsByEmail(ctx context.Context, email string) (bool, error) {
+	row := q.db.QueryRow(ctx, userExistsByEmail, email)
+	var is_exist bool
+	err := row.Scan(&is_exist)
+	return is_exist, err
+}
