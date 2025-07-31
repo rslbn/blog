@@ -14,10 +14,11 @@ type AuthService interface {
 
 type authService struct {
 	userService UserService
+	jwtService  JwtService
 }
 
-func NewAuthService(us UserService) AuthService {
-	return &authService{us}
+func NewAuthService(us UserService, js JwtService) AuthService {
+	return &authService{us, js}
 }
 
 func (a *authService) Login(c context.Context, r *model.LoginRequest) (*model.LoginResponse, error) {
@@ -37,7 +38,12 @@ func (a *authService) Login(c context.Context, r *model.LoginRequest) (*model.Lo
 		}
 	}
 
+	token, err := a.jwtService.GenerateToken(user)
+	if err != nil {
+		return nil, err
+	}
+
 	return &model.LoginResponse{
-		ID: uint32(user.UserID), Email: user.Email, Username: user.Username, Token: "token",
+		ID: uint32(user.UserID), Email: user.Email, Username: user.Username, Token: token,
 	}, nil
 }
