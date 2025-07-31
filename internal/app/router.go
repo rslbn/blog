@@ -18,12 +18,12 @@ func NewRouter(dbConn *pgxpool.Pool) http.Handler {
 	userService := service.NewUserService(sqlcQueries)
 	userHandler := handler.NewUserHandler(userService)
 
-	// authService := service.NewAuthService(userService)
-	// authHandler := handler.NewAuthHandler(authService)
+	authService := service.NewAuthService(userService)
+	authHandler := handler.NewAuthHandler(authService)
 
 	mux.HandleFunc("GET /users", web.HandlerAdapter(userHandler.GetAll))
 	mux.HandleFunc("GET /users/{username}", web.HandlerAdapter(userHandler.GetUserByUsername))
-	// mux.HandleFunc("POST /auth/login", authHandler.Login)
+	mux.HandleFunc("POST /auth/login", web.HandlerAdapter(authHandler.Login))
 	mux.HandleFunc("POST /auth/register", web.HandlerAdapter(userHandler.Register))
 	return mux
 }

@@ -6,6 +6,10 @@ type AlreadyExistError struct {
 	Message string
 }
 
+type InvalidCredentialsError struct {
+	Message string
+}
+
 type NotFoundError struct {
 	Message string
 }
@@ -22,4 +26,8 @@ func (e *AlreadyExistError) Error() string {
 		return fmt.Sprintf("[already exist error]: , %v", e.Message)
 	}
 	return "[already exist]"
+}
+
+func (e *InvalidCredentialsError) Error() string {
+	return "invalid credentials"
 }

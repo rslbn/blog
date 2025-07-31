@@ -14,6 +14,7 @@ type UserService interface {
 	GetUserByUsername(ctx context.Context, username string) (*model.UserResponse, error)
 	GetAllUsers(ctx context.Context) ([]model.UserResponse, error)
 	Register(ctx context.Context, request *model.RegisterRequest) (*model.UserResponse, error)
+	FindUserByUsername(ctx context.Context, username string) (*db.User, error)
 }
 
 type userService struct {
@@ -45,12 +46,9 @@ func (us *userService) GetAllUsers(ctx context.Context) ([]model.UserResponse, e
 }
 
 func (us *userService) GetUserByUsername(ctx context.Context, username string) (*model.UserResponse, error) {
-	user, err := us.queries.GetUserByUsername(ctx, username)
+	user, err := us.FindUserByUsername(ctx, username)
 	if err != nil {
-		message := fmt.Sprintf("User not found with username, %v", username)
-		return nil, &customError.NotFoundError{
-			Message: message,
-		}
+		return nil, err
 	}
 	userResponse := &model.UserResponse{
 		UserID:   uint32(user.UserID),
@@ -114,4 +112,15 @@ func (us *userService) Register(ctx context.Context, request *model.RegisterRequ
 		Username: savedUser.Username,
 		Email:    savedUser.Email,
 	}, nil
+}
+
+func (us *userService) FindUserByUsername(ctx context.Context, username string) (*db.User, error) {
+	user, err := us.queries.GetUserByUsername(ctx, username)
+	if err != nil {
+		message := fmt.Sprintf("User not found with username, %v", username)
+		return nil, &customError.NotFoundError{
+			Message: message,
+		}
+	}
+	return &user, nil
 }
